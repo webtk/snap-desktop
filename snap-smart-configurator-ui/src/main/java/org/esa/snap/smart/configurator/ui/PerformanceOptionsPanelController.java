@@ -15,22 +15,26 @@
  */
 package org.esa.snap.smart.configurator.ui;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
-@OptionsPanelController.TopLevelRegistration(
-        categoryName = "#OptionsCategory_Name_Performance",
-        iconBase = "org/esa/snap/smart/configurator/ui/Performance32.png",
-        keywords = "#OptionsCategory_Keywords_Performance_Optim",
-        keywordsCategory = "Performance",
-        position = 3
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+@OptionsPanelController.SubRegistration(
+        location = "PerformancePreferences",
+        displayName = "#OptionsCategory_Name_Performance_tab",
+        keywords = "#OptionsCategory_Keywords_Performance_tab_Optim",
+        keywordsCategory = "#OptionsCategory_Name_Performance_tab"
 )
-@org.openide.util.NbBundle.Messages({"OptionsCategory_Name_Performance=Performance", "OptionsCategory_Keywords_Performance_Optim=Performance optimization smart configurator"})
+@org.openide.util.NbBundle.Messages({
+        "OptionsCategory_Name_Performance_tab=Performance",
+        "OptionsCategory_Keywords_Performance_tab_Optim=Performance optimization smart configurator"
+})
+
 public final class PerformanceOptionsPanelController extends OptionsPanelController {
 
     private PerformancePanel panel;

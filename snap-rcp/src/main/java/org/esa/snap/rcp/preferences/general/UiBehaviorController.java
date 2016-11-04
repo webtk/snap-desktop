@@ -72,7 +72,6 @@ public final class UiBehaviorController extends DefaultConfigController {
 
 
     private static final String PREFERENCE_KEY_SHOW_SUPPRESSED = "showSuppressedDialogsAgain";
-    private static final String PREFERENCE_KEY_SOUND_BEEP = "playSoundBeepAfterProcess";
 
     @Override
     public void applyChanges() {
