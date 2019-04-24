@@ -21,9 +21,14 @@ import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
+import org.openide.util.actions.Presenter;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -32,12 +37,29 @@ import java.awt.event.ActionEvent;
  * @author Norman Fomferra
  */
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.mosaic.MosaicAction")
-@ActionRegistration(displayName = "#CTL_MosaicAction_Name")
-@ActionReference(path = "Menu/Raster/Geometric Operations")
-@NbBundle.Messages("CTL_MosaicAction_Name=Mosaicing")
-public class MosaicAction extends AbstractSnapAction {
+@ActionRegistration(displayName = "#CTL_MosaicAction_Name", lazy = false)
+@ActionReferences({
+        @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
+        @ActionReference(path = "Toolbars/Processing Other", position = 60)
+})
+@NbBundle.Messages({
+        "CTL_MosaicAction_Name=Mosaic",
+        "CTL_MosaicAction_Description=Mosaic: creates a file which is an aggregate of multiple files."
+})
+public final class MosaicAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
+
+    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic.png";
+    private static final String LARGEICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic24.png";
+
+
+    public MosaicAction() {
+        putValue(NAME, Bundle.CTL_MosaicAction_Name());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_MosaicAction_Description());
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -51,5 +73,19 @@ public class MosaicAction extends AbstractSnapAction {
     @Override
     public boolean isEnabled() {
         return GPF.getDefaultInstance().getOperatorSpiRegistry().getOperatorSpi("Mosaic") != null;
+    }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
     }
 }

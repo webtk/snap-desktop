@@ -16,15 +16,17 @@
 
 package org.esa.snap.collocation.visat;
 
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ImageUtilities;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,37 +38,30 @@ import java.awt.event.ActionEvent;
  * @author Ralf Quast
  * @author Marco Peters
  */
-
-
-
-
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
-        @ActionReference(path = "Toolbars/ProcessingOther", position = 20)
+        @ActionReference(path = "Toolbars/Processing Other", position = 40)
 })
-
 @NbBundle.Messages({
-        "CTL_CollocationAction_Text=Collocation",
-        "CTL_CollocationAction_Description=Collocation: geographic collocation of two data products."
+        "CTL_CollocationAction_Text=Collocate",
+        "CTL_CollocationAction_Description=Collocate: creates a files which is a geographic collocation of two files."
 })
-
-public class CollocationAction extends AbstractSnapAction {
+public final class CollocationAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
+    private static final String SMALLICON = "org/esa/snap/collocation/docs/icons/Collocation.png";
+    private static final String LARGEICON = "org/esa/snap/collocation/docs/icons/Collocation24.png";
 
 
     public CollocationAction() {
         putValue(NAME, Bundle.CTL_CollocationAction_Text());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_CollocationAction_Description());
-        putValue(LONG_DESCRIPTION, Bundle.CTL_CollocationAction_Description());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/collocation/docs/icons/Collocation24.png", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/collocation/docs/icons/Collocation24.png", false));
         setHelpId(CollocationDialog.HELP_ID);
-
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -75,5 +70,20 @@ public class CollocationAction extends AbstractSnapAction {
         }
         dialog.show();
     }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
+    }
+
 
 }

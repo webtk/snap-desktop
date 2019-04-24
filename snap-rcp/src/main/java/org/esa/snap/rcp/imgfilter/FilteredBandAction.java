@@ -32,16 +32,11 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ContextAwareAction;
-import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
@@ -58,17 +53,20 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 10),
+        @ActionReference(path = "Toolbars/Processing Other", position = 20),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 40,separatorAfter = 45)
 })
 @NbBundle.Messages({
-        "CTL_FilteredBandAction_MenuText=Filtered Band...",
-        "CTL_FilteredBandAction_ShortDescription=Applies a filter to the currently selected band and adds it as a new band."
+        "CTL_FilteredBandAction_MenuText=Filtered Band",
+        "CTL_FilteredBandAction_ShortDescription=Filtered Band: applies a filter to the currently selected band and adds it as a new band."
 })
-public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction {
+public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
 
     private Lookup lookup;
     private Lookup.Result<RasterDataNode> result;
 
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/FilteredBand.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/FilteredBand24.png";
 
     public FilteredBandAction() {
         this(Utilities.actionsGlobalContext());
@@ -76,6 +74,9 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     public FilteredBandAction(Lookup lookup){
         super(Bundle.CTL_FilteredBandAction_MenuText());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_FilteredBandAction_ShortDescription());
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
@@ -169,6 +170,33 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
         return targetBand;
     }
 
+    public static FilterBand createFilterBandForGPT(RasterDataNode sourceRaster, Filter filter, String bandName, int iterationCount) {
+        FilterBand targetBand;
+        Product product = sourceRaster.getProduct();
+
+        if (filter.getOperation() == Filter.Operation.CONVOLVE) {
+            targetBand = new ConvolutionFilterBand(bandName, sourceRaster, getKernel(filter), iterationCount);
+            if (sourceRaster instanceof Band) {
+                ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
+            }
+        } else {
+            GeneralFilterBand.OpType opType = getOpType(filter.getOperation());
+            targetBand = new GeneralFilterBand(bandName, sourceRaster, opType, getKernel(filter), iterationCount);
+            if (sourceRaster instanceof Band) {
+                ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
+            }
+        }
+
+        targetBand.setDescription(String.format("Filter '%s' (=%s) applied to '%s'", filter.getName(), filter.getOperation(), sourceRaster.getName()));
+        if (sourceRaster instanceof Band) {
+            ProductUtils.copySpectralBandProperties((Band) sourceRaster, targetBand);
+        }
+        product.addBand(targetBand);
+        targetBand.fireProductNodeDataChanged();
+        return targetBand;
+    }
+
+
     private static Kernel getKernel(Filter filter) {
         return new Kernel(filter.getKernelWidth(),
                 filter.getKernelHeight(),
@@ -186,6 +214,21 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
             return dialog.getDialogData();
         }
         return null;
+    }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
     }
 
 }

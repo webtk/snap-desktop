@@ -26,12 +26,12 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.HelpCtx;
+import org.openide.util.*;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -50,20 +50,26 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
+        @ActionReference(path = "Toolbars/Processing Other", position = 20),
         @ActionReference(path = "Context/Product/Product", position = 10),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 20)
 })
 @Messages({
-        "CTL_BandMathsAction_MenuText=Band Maths...",
-        "CTL_BandMathsAction_ShortDescription=Create a new band using an arbitrary mathematical expression"
+        "CTL_BandMathsAction_MenuText=Math Band",
+        "CTL_BandMathsAction_ShortDescription=Math Band: create a new band using an arbitrary mathematical expression"
 })
-public class BandMathsAction extends AbstractAction implements HelpCtx.Provider {
+public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "bandArithmetic";
+
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/BandMaths.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/BandMaths24.png";
 
     public BandMathsAction() {
         super(Bundle.CTL_BandMathsAction_MenuText());
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
         final ProductManager productManager = SnapApp.getDefault().getProductManager();
         setEnabled(productManager.getProductCount() > 0);
         productManager.addListener(new PMListener());
@@ -109,5 +115,20 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider 
             setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
         }
 
+    }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
     }
 }

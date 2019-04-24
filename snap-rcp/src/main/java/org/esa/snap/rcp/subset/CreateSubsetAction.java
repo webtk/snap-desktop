@@ -20,7 +20,6 @@ import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -29,11 +28,13 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractAction;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -42,43 +43,54 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
-
-
-
-@ActionID(category = "Raster", id = "CreateSubsetAction")
-@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
-
+@ActionID(category = "Tools", id = "CreateSubsetAction")
+@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 50),
-        @ActionReference(path = "Toolbars/ProcessingOther", position = 20)
+        @ActionReference(path = "Toolbars/Processing Other", position = 50)
 })
-
-
 @NbBundle.Messages({
-        "CTL_CreateSubsetAction_Name=Subset...",
-        "CTL_CreateSubsetAction_Title=Subset",
-        "CTL_CreateSubsetAction_Description=Crop: create a subset"
+        "CTL_CreateSubsetAction_Name=Subset",
+        "CTL_CreateSubsetAction_Title=Subset: crop a file (spatial, subsample, raster) to create a new file ( default boundaries are the current view)"
 })
-
-
-public class CreateSubsetAction extends AbstractAction {
+public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
 
     static int subsetNumber;
 
     private final ProductNode sourceNode;
 
-    public CreateSubsetAction(ProductNode sourceNode) {
-        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Description());
-        putValue(LONG_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Description());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/SpatialSubset24.png", false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/SpatialSubset24.png", false));
+    private final Lookup lookup;
+    private final Lookup.Result<ProductSceneView> viewResult;
+
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/Create_subset.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/Create_subset24.png";
+
+
+    public CreateSubsetAction() {
+        this(null);
+    }
+
+    protected CreateSubsetAction(Lookup lookup) {
+        this(lookup, null);
+    }
+
+    public CreateSubsetAction(Lookup lookup, ProductNode sourceNode) {
         this.sourceNode = sourceNode;
+        putValue(ACTION_COMMAND_KEY, getClass().getName());
+//        putValue(SELECTED_KEY, false);
+        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
+        this.lookup = lookup != null ? lookup : Utilities.actionsGlobalContext();
+        this.viewResult = this.lookup.lookupResult(ProductSceneView.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = sourceNode.getProduct();
+        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
         if (product != null) {
             createSubset(product, getInitialBounds(product));
         }
@@ -134,4 +146,29 @@ public class CreateSubsetAction extends AbstractAction {
         }
         return bounds;
     }
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
+    }
+
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
+
+    protected void updateEnabledState() {
+        super.setEnabled(!viewResult.allInstances().isEmpty());
+    }
+
+
 }

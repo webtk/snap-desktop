@@ -18,17 +18,14 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.Band;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RGBImageProfile;
-import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.jexp.ParseException;
 import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.netbeans.docwin.DocumentWindowManager;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.bandmaths.BandMathsAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.RGBImageProfilePane;
@@ -40,8 +37,8 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.UndoRedo;
-import org.openide.util.HelpCtx;
-import org.openide.util.NbBundle;
+import org.openide.util.*;
+import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,30 +57,53 @@ import java.util.stream.Collectors;
 @ActionRegistration(
         displayName = "#CTL_OpenRGBImageViewAction_MenuText",
         popupText = "#CTL_OpenRGBImageViewAction_MenuText",
-        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
-        lazy = true
+//        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
+        lazy = false
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
+        @ActionReference(path = "Toolbars/Processing Other", position = 30),
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_MenuText=Open RGB Image Window",
-        "CTL_OpenRGBImageViewAction_ShortDescription=Open an RGB image view for the selected product"
+        "CTL_OpenRGBImageViewAction_MenuText=RGB Image",
+        "CTL_OpenRGBImageViewAction_ShortDescription=RGB Image: opens an RGB image view for the selected product"
 })
-public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider {
+public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "rgbImageProfile";
     private Product product;
 
-    public OpenRGBImageViewAction(ProductNode node) {
-        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
-        product = node.getProduct();
+    private final Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
+
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/RgbTool.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/RgbTool24.png";
+
+    public OpenRGBImageViewAction() {this(null);}
+
+    public OpenRGBImageViewAction(Product product) {
+        this(null, null);
+    }
+
+
+    public OpenRGBImageViewAction(Product product, Lookup lookup) {
+//        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
+//        product = node.getProduct();
+        putValue(ACTION_COMMAND_KEY, getClass().getName());
+        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_MenuText());
         putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
+        this.lookup = lookup != null ? lookup : Utilities.actionsGlobalContext();
+        this.viewResult = this.lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
         if (product != null) {
             openProductSceneViewRGB(product, HELP_ID);
         }
@@ -319,5 +339,29 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         nameBuilder.append(operation);
 
         return nameBuilder.toString();
+    }
+
+
+    @Override
+    public JMenuItem getMenuPresenter() {
+        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        menuItem.setIcon(null);
+        return menuItem;
+    }
+
+    @Override
+    public Component getToolbarPresenter() {
+        JToggleButton toggleButton = new JToggleButton(this);
+        toggleButton.setText(null);
+        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return toggleButton;
+    }
+
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
+
+    protected void updateEnabledState() {
+        super.setEnabled(!viewResult.allInstances().isEmpty());
     }
 }
