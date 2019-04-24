@@ -173,6 +173,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>snap-cloud-exploitation-platform-ui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- disabled: these modules don't have the required maturity right now. -->
         <!--<dependency>-->
         <!--<groupId>${project.groupId}</groupId>-->
@@ -205,11 +211,34 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.2.5,3.6.0]</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>1.8</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Permits NbModuleSuite to be run in integration-test phase: -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.2</version>
+                <version>3.0.0-M3</version>
                 <configuration>
                     <!-- currently the application test fails during initialisation of JAI-->
                     <skipTests>true</skipTests>
@@ -240,7 +269,7 @@
                         </configuration>
                     </execution>
                     <execution> <!-- actuallly not nice to copy the resources from the engine here -->
-                        <id>copy-version-file</id>
+                        <id>copy-files</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -252,6 +281,7 @@
                                     <directory>../../snap-engine</directory>
                                     <includes>
                                         <include>VERSION.txt</include>
+                                        <include>THIRDPARTY_LICENSES.txt</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
