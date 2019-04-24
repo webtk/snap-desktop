@@ -20,9 +20,14 @@ import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -31,22 +36,37 @@ import java.awt.event.ActionEvent;
  * @author Ralf Quast
  * @author Marco Peters
  */
+
+
+
+
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
-@ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000)
+@ActionReferences({
+        @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
+        @ActionReference(path = "Toolbars/ProcessingOther", position = 20)
+})
+
 @NbBundle.Messages({
         "CTL_CollocationAction_Text=Collocation",
-        "CTL_CollocationAction_Description=Geographic collocation of two data products."
+        "CTL_CollocationAction_Description=Collocation: geographic collocation of two data products."
 })
+
 public class CollocationAction extends AbstractSnapAction {
 
     private ModelessDialog dialog;
 
+
     public CollocationAction() {
         putValue(NAME, Bundle.CTL_CollocationAction_Text());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_CollocationAction_Description());
+        putValue(LONG_DESCRIPTION, Bundle.CTL_CollocationAction_Description());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/collocation/docs/icons/Collocation24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/collocation/docs/icons/Collocation24.png", false));
         setHelpId(CollocationDialog.HELP_ID);
+
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

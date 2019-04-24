@@ -20,6 +20,7 @@ import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -28,6 +29,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
@@ -40,13 +42,25 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
+
+
+
 @ActionID(category = "Raster", id = "CreateSubsetAction")
 @ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
-@ActionReferences({@ActionReference(path = "Menu/Raster", position = 50)})
+
+@ActionReferences({
+        @ActionReference(path = "Menu/Raster", position = 50),
+        @ActionReference(path = "Toolbars/ProcessingOther", position = 20)
+})
+
+
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset...",
-        "CTL_CreateSubsetAction_Title=Subset"
+        "CTL_CreateSubsetAction_Title=Subset",
+        "CTL_CreateSubsetAction_Description=Crop: create a subset"
 })
+
+
 public class CreateSubsetAction extends AbstractAction {
 
     static int subsetNumber;
@@ -54,6 +68,11 @@ public class CreateSubsetAction extends AbstractAction {
     private final ProductNode sourceNode;
 
     public CreateSubsetAction(ProductNode sourceNode) {
+        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Description());
+        putValue(LONG_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Description());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/SpatialSubset24.png", false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/SpatialSubset24.png", false));
         this.sourceNode = sourceNode;
     }
 
