@@ -149,17 +149,17 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
 
     @Override
     public JMenuItem getMenuPresenter() {
-        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        JMenuItem menuItem = new JMenuItem(this);
         menuItem.setIcon(null);
         return menuItem;
     }
 
     @Override
     public Component getToolbarPresenter() {
-        JToggleButton toggleButton = new JToggleButton(this);
-        toggleButton.setText(null);
-        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
-        return toggleButton;
+        JButton button = new JButton(this);
+        button.setText(null);
+        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return button;
     }
 
     public void resultChanged(LookupEvent ignored) {

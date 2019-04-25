@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
  *
  * @author Marco Peters
  */
+//Apr2019 - Bing Yang / Daniel Knowles - Added this tool to the toolbar
+
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
         displayName = "#CTL_OpenRGBImageViewAction_MenuText",
@@ -344,17 +346,17 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     @Override
     public JMenuItem getMenuPresenter() {
-        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(this);
+        JMenuItem menuItem = new JMenuItem(this);
         menuItem.setIcon(null);
         return menuItem;
     }
 
     @Override
     public Component getToolbarPresenter() {
-        JToggleButton toggleButton = new JToggleButton(this);
-        toggleButton.setText(null);
-        toggleButton.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
-        return toggleButton;
+        JButton button = new JButton(this);
+        button.setText(null);
+        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        return button;
     }
 
     public void resultChanged(LookupEvent ignored) {
