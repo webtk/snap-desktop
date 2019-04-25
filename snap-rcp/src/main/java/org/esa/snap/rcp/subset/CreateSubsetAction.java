@@ -43,11 +43,13 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
 @ActionID(category = "Tools", id = "CreateSubsetAction")
 @ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 50),
-        @ActionReference(path = "Toolbars/Processing Other", position = 50)
+        @ActionReference(path = "Toolbars/Raster", position = 40)
 })
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset",
@@ -62,8 +64,8 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
     private final Lookup lookup;
     private final Lookup.Result<ProductSceneView> viewResult;
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/Create_subset.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/Create_subset24.png";
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/Subset16.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/Subset24.png";
 
 
     public CreateSubsetAction() {

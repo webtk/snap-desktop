@@ -34,12 +34,17 @@ import java.awt.event.ActionEvent;
  * Geographic collocation action.
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
+
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.reproject.ReprojectionAction")
 @ActionRegistration(displayName = "#CTL_ReprojectionAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
-        @ActionReference(path = "Toolbars/Processing Other", position = 70)
+        @ActionReference(path = "Toolbars/Raster", position = 60)
 })
 @NbBundle.Messages({
         "CTL_ReprojectionAction_Name=Reproject",
@@ -49,7 +54,7 @@ public final class ReprojectionAction extends AbstractSnapAction implements Pres
 
     private ModelessDialog dialog;
 
-    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Reproject.png";
+    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Reproject16.png";
     private static final String LARGEICON = "org/esa/snap/core/gpf/docs/gpf/icons/Reproject24.png";
 
     public ReprojectionAction() {

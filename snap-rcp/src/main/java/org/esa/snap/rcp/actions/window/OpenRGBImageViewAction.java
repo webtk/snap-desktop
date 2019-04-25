@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  *
  * @author Marco Peters
  */
-//Apr2019 - Bing Yang / Daniel Knowles - Added this tool to the toolbar
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Image" toolbar including tooltips and related icon.
 
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
@@ -64,7 +64,7 @@ import java.util.stream.Collectors;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 110),
-        @ActionReference(path = "Toolbars/Processing Other", position = 30),
+        @ActionReference(path = "Toolbars/Image", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
@@ -79,8 +79,8 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     private final Lookup lookup;
     private final Lookup.Result<ProductNode> viewResult;
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/RgbTool.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/RgbTool24.png";
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/RgbImage16.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/RgbImage24.png";
 
     public OpenRGBImageViewAction() {this(null);}
 

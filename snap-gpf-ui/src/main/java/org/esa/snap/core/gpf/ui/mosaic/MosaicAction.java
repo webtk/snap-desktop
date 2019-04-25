@@ -36,11 +36,14 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
+
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.mosaic.MosaicAction")
 @ActionRegistration(displayName = "#CTL_MosaicAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
-        @ActionReference(path = "Toolbars/Processing Other", position = 60)
+        @ActionReference(path = "Toolbars/Raster", position = 50)
 })
 @NbBundle.Messages({
         "CTL_MosaicAction_Name=Mosaic",
@@ -50,7 +53,7 @@ public final class MosaicAction extends AbstractSnapAction implements Presenter.
 
     private ModelessDialog dialog;
 
-    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic.png";
+    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic16.png";
     private static final String LARGEICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic24.png";
 
 

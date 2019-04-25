@@ -38,6 +38,9 @@ import java.util.stream.Collectors;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
+
 @ActionID(
         category = "Tools",
         id = "BandMathsAction"
@@ -50,7 +53,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 0),
-        @ActionReference(path = "Toolbars/Processing Other", position = 20),
+        @ActionReference(path = "Toolbars/Raster", position = 10),
         @ActionReference(path = "Context/Product/Product", position = 10),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 20)
 })
@@ -62,8 +65,8 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
 
     private static final String HELP_ID = "bandArithmetic";
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/BandMaths.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/BandMaths24.png";
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/MathBand16.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/MathBand24.png";
 
     public BandMathsAction() {
         super(Bundle.CTL_BandMathsAction_MenuText());

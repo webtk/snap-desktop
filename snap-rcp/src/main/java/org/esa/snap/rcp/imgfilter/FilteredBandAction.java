@@ -42,6 +42,8 @@ import java.awt.event.ActionEvent;
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
 @ActionID(
         category = "Tools",
         id = "FilteredBandAction"
@@ -53,20 +55,20 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 10),
-        @ActionReference(path = "Toolbars/Processing Other", position = 20),
+        @ActionReference(path = "Toolbars/Raster", position = 20),
         @ActionReference(path = "Context/Product/RasterDataNode", position = 40,separatorAfter = 45)
 })
 @NbBundle.Messages({
-        "CTL_FilteredBandAction_MenuText=Filtered Band",
-        "CTL_FilteredBandAction_ShortDescription=Filtered Band: applies a filter to the currently selected band and adds it as a new band."
+        "CTL_FilteredBandAction_MenuText=Filter Band",
+        "CTL_FilteredBandAction_ShortDescription=Filter Band: applies a filter to the currently selected band and adds it as a new band."
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
 
     private Lookup lookup;
     private Lookup.Result<RasterDataNode> result;
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/FilteredBand.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/FilteredBand24.png";
+    private static final String SMALLICON = "org/esa/snap/rcp/icons/FilterBand16.png";
+    private static final String LARGEICON = "org/esa/snap/rcp/icons/FilterBand24.png";
 
     public FilteredBandAction() {
         this(Utilities.actionsGlobalContext());

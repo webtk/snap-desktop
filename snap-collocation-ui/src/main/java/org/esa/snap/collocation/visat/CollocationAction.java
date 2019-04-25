@@ -38,11 +38,13 @@ import java.awt.event.ActionEvent;
  * @author Ralf Quast
  * @author Marco Peters
  */
+//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
-        @ActionReference(path = "Toolbars/Processing Other", position = 40)
+        @ActionReference(path = "Toolbars/Raster", position = 30)
 })
 @NbBundle.Messages({
         "CTL_CollocationAction_Text=Collocate",
@@ -51,8 +53,8 @@ import java.awt.event.ActionEvent;
 public final class CollocationAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
-    private static final String SMALLICON = "org/esa/snap/collocation/docs/icons/Collocation.png";
-    private static final String LARGEICON = "org/esa/snap/collocation/docs/icons/Collocation24.png";
+    private static final String SMALLICON = "org/esa/snap/collocation/docs/icons/Collocate16.png";
+    private static final String LARGEICON = "org/esa/snap/collocation/docs/icons/Collocate24.png";
 
 
     public CollocationAction() {
