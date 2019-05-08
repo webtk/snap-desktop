@@ -42,7 +42,15 @@ import java.awt.event.ActionEvent;
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 
-//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+/**
+ * This action applies a filter to creates a filtered band
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles
+ * @author Bing Yang
+ */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
 
 @ActionID(
         category = "Tools",

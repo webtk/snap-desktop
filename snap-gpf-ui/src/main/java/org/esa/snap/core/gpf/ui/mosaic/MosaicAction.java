@@ -35,8 +35,10 @@ import java.awt.event.ActionEvent;
  * Mosaicing action.
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
-//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 
 @ActionID(category = "Operators", id = "org.esa.snap.core.gpf.ui.mosaic.MosaicAction")

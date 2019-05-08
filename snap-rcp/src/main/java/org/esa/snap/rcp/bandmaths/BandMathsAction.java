@@ -38,8 +38,14 @@ import java.util.stream.Collectors;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
-//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
-
+/**
+ * This action creates a band using a mathematical expression
+ *
+ * @author Brockmann Consult
+ * @author Daniel Knowles
+ * @author Bing Yang
+ */
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 @ActionID(
         category = "Tools",

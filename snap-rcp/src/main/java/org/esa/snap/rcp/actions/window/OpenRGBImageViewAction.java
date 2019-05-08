@@ -52,8 +52,10 @@ import java.util.stream.Collectors;
  * This action opens an RGB image view on the currently selected Product.
  *
  * @author Marco Peters
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
-//Apr2019 - Knowles / Yang - Added access to this tool in the "Image" toolbar including tooltips and related icon.
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Image" toolbar including tooltips and related icon.
 
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
@@ -100,7 +102,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
         this.lookup = lookup != null ? lookup : Utilities.actionsGlobalContext();
         this.viewResult = this.lookup.lookupResult(ProductNode.class);
         this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
-        updateEnabledState();
     }
 
     @Override

@@ -42,8 +42,10 @@ import java.awt.event.ActionEvent;
  * taken from the currently visible image area, if any.
  *
  * @author Norman Fomferra
+ * @author Daniel Knowles
+ * @author Bing Yang
  */
-//Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 @ActionID(category = "Tools", id = "CreateSubsetAction")
 @ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
