@@ -19,22 +19,20 @@ package org.esa.snap.rcp.subset;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.gpf.common.SubsetOp;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
-import org.esa.snap.rcp.util.MultiSizeIssue;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
-import org.openide.util.*;
-import org.openide.util.actions.Presenter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 
 /**
@@ -42,104 +40,79 @@ import java.awt.event.ActionEvent;
  * taken from the currently visible image area, if any.
  *
  * @author Norman Fomferra
- * @author Daniel Knowles
- * @author Bing Yang
  */
-//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
-
-@ActionID(category = "Tools", id = "CreateSubsetAction")
-@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
-@ActionReferences({
-        @ActionReference(path = "Menu/Raster", position = 50),
-        @ActionReference(path = "Toolbars/Raster", position = 40)
-})
+@ActionID(category = "Raster", id = "CreateSubsetAction")
+@ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name")
+@ActionReferences({@ActionReference(path = "Menu/Raster", position = 50)})
 @NbBundle.Messages({
-        "CTL_CreateSubsetAction_Name=Subset",
-        "CTL_CreateSubsetAction_Title=Subset: crop a file (spatial, subsample, raster) to create a new file ( default boundaries are the current view)"
+        "CTL_CreateSubsetAction_Name=Subset...",
+        "CTL_CreateSubsetAction_Title=Subset"
 })
-public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
+public class CreateSubsetAction extends AbstractAction {
 
     static int subsetNumber;
 
     private final ProductNode sourceNode;
 
-    private final Lookup lookup;
-    private final Lookup.Result<ProductSceneView> viewResult;
-
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/Subset16.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/Subset24.png";
-
-
-    public CreateSubsetAction() {
-        this(null);
-    }
-
-    protected CreateSubsetAction(Lookup lookup) {
-        this(lookup, null);
-    }
-
-    public CreateSubsetAction(Lookup lookup, ProductNode sourceNode) {
+    public CreateSubsetAction(ProductNode sourceNode) {
         this.sourceNode = sourceNode;
-        putValue(ACTION_COMMAND_KEY, getClass().getName());
-//        putValue(SELECTED_KEY, false);
-        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
-        this.lookup = lookup != null ? lookup : Utilities.actionsGlobalContext();
-        this.viewResult = this.lookup.lookupResult(ProductSceneView.class);
-        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
-        updateEnabledState();
     }
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+        Product product = sourceNode.getProduct();
+
+        RasterDataNode rasterDataNode = null;
+        ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        if (view != null && view.getProduct() == product && view.getRaster() != null) {
+            rasterDataNode = view.getRaster();
+        }
+
         if (product != null) {
-            createSubset(product, getInitialBounds(product));
+            createSubset(product, getInitialBounds(product), rasterDataNode);
         }
     }
 
-    public static void createSubset(Product sourceProduct, Rectangle bounds) {
-        if (MultiSizeIssue.isMultiSize(sourceProduct)) {
-            final Product resampledProduct = MultiSizeIssue.maybeResample(sourceProduct);
-            //todo use resampled product to call subsetDialog from here using the code below - tf 20160314
-//            if (resampledProduct != null) {
-//                sourceProduct = resampledProduct;
-//            } else {
-//                return;
-//            }
-            return;
-        }
+    public static void createSubset(Product sourceProduct, Rectangle bounds, RasterDataNode rdn) {
 
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
+
         initSubset.setRegion(bounds);
+        if(sourceProduct.isMultiSize() && rdn != null) {
+            initSubset.setRegionMap(SubsetOp.computeRegionMap(initSubset.getRegion(),rdn.getName(),sourceProduct,null));
+        } else if(sourceProduct.isMultiSize()) {
+            initSubset.setRegionMap(SubsetOp.computeRegionMap(initSubset.getRegion(),sourceProduct,null));
+        }
         initSubset.setNodeNames(sourceProduct.getBandNames());
         initSubset.addNodeNames(sourceProduct.getTiePointGridNames());
         initSubset.setIgnoreMetadata(false);
         final ProductSubsetDialog subsetDialog = new ProductSubsetDialog(SnapApp.getDefault().getMainFrame(),
-                                                                         sourceProduct, initSubset);
+                sourceProduct, initSubset);
         if (subsetDialog.show() != ProductSubsetDialog.ID_OK) {
             return;
         }
         final ProductSubsetDef subsetDef = subsetDialog.getProductSubsetDef();
         if (subsetDef == null) {
             Dialogs.showInformation(Bundle.CTL_CreateSubsetFromViewAction_Title(),
-                                    "No product subset created.",
-                                    null);
+                    "No product subset created.",
+                    null);
             return;
         }
         try {
             final Product subset = sourceProduct.createSubset(subsetDef, subsetName,
-                                                              sourceProduct.getDescription());
+                    sourceProduct.getDescription());
             SnapApp.getDefault().getProductManager().addProduct(subset);
             CreateSubsetAction.subsetNumber++;
         } catch (Exception e) {
             final String msg = "An error occurred while creating the product subset:\n" +
-                               e.getMessage();
+                    e.getMessage();
             SnapApp.getDefault().handleError(msg, e);
         }
+    }
+
+    public static void createSubset(Product sourceProduct, Rectangle bounds) {
+        createSubset(sourceProduct, bounds, null);
     }
 
     private Rectangle getInitialBounds(Product product) {
@@ -147,32 +120,9 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
         if (view != null && view.getProduct() == product) {
             bounds = view.getVisibleImageBounds();
+        } else {
+            bounds = new Rectangle(0,0,product.getSceneRasterWidth(),product.getSceneRasterHeight());
         }
         return bounds;
     }
-
-    @Override
-    public JMenuItem getMenuPresenter() {
-        JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
-        return menuItem;
-    }
-
-    @Override
-    public Component getToolbarPresenter() {
-        JButton button = new JButton(this);
-        button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
-        return button;
-    }
-
-    public void resultChanged(LookupEvent ignored) {
-        updateEnabledState();
-    }
-
-    protected void updateEnabledState() {
-        super.setEnabled(!viewResult.allInstances().isEmpty());
-    }
-
-
 }
