@@ -72,15 +72,8 @@ public class CreateSubsetAction extends AbstractAction implements Presenter.Menu
 
     static int subsetNumber;
 
-    private final ProductNode sourceNode;
 
     public CreateSubsetAction() {
-        this(null);
-    }
-
-    protected CreateSubsetAction(ProductNode sourceNode) {
-        this.sourceNode = sourceNode;
-
         putValue(ACTION_COMMAND_KEY, getClass().getName());
         putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
@@ -95,9 +88,7 @@ public class CreateSubsetAction extends AbstractAction implements Presenter.Menu
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = (sourceNode != null)
-                ? sourceNode.getProduct()
-                : SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
 
         RasterDataNode rasterDataNode = null;
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
