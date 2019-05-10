@@ -18,6 +18,7 @@ package org.esa.snap.rcp.subset;
 
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.common.SubsetOp;
@@ -29,14 +30,13 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.Lookup;
-import org.openide.util.NbBundle;
 import org.openide.util.*;
 import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+
 
 /**
         * This action opens a product subset dialog with the initial spatial bounds
@@ -48,6 +48,7 @@ import java.awt.event.ActionEvent;
         */
 //Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
+
 @ActionID(category = "Tools", id = "CreateSubsetAction")
 @ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
 @ActionReferences({
@@ -56,46 +57,55 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset",
-        "CTL_CreateSubsetAction_Title=Subset: crop a file (spatial, subsample, raster) to create a new file ( default boundaries are the current view)"
+        "CTL_CreateSubsetAction_Title=<html>Subset: crop a file (spatial, subsample, raster) to create a new file<br>" +
+        "( default boundaries are the current view)</html>"
 })
+
+
+
+
 public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
+
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Subset24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Subset16.png";
 
     static int subsetNumber;
 
     private final ProductNode sourceNode;
 
-    private final Lookup lookup;
     private final Lookup.Result<ProductSceneView> viewResult;
-
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/Subset16.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/Subset24.png";
-
 
     public CreateSubsetAction() {
         this(null);
     }
 
-    protected CreateSubsetAction(Lookup lookup) {
-        this(lookup, null);
+    protected CreateSubsetAction(ProductNode sourceNode) {
+        this.sourceNode = sourceNode;
+
+        putValue(ACTION_COMMAND_KEY, getClass().getName());
+        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
+
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.viewResult = lookup.lookupResult(ProductSceneView.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+
+        final ProductManager productManager = SnapApp.getDefault().getProductManager();
+        setEnabled(productManager.getProductCount() > 0);
+        productManager.addListener(new PMListener());
+
+       // updateEnabledState();
     }
 
-    public CreateSubsetAction(Lookup lookup, ProductNode sourceNode) {
-        this.sourceNode = sourceNode;
-        putValue(ACTION_COMMAND_KEY, getClass().getName());
-//        putValue(SELECTED_KEY, false);
-        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
-        this.lookup = lookup != null ? lookup : Utilities.actionsGlobalContext();
-        this.viewResult = this.lookup.lookupResult(ProductSceneView.class);
-        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
-        updateEnabledState();
-    }
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+        Product product = (sourceNode != null)
+                ? sourceNode.getProduct()
+                : SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
 
         RasterDataNode rasterDataNode = null;
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
@@ -109,7 +119,6 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
     }
 
     public static void createSubset(Product sourceProduct, Rectangle bounds, RasterDataNode rdn) {
-
         final String subsetName = "subset_" + CreateSubsetAction.subsetNumber + "_of_" + sourceProduct.getName();
         final ProductSubsetDef initSubset = new ProductSubsetDef();
 
@@ -172,7 +181,7 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
         return button;
     }
 
@@ -182,6 +191,26 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
 
     protected void updateEnabledState() {
         super.setEnabled(!viewResult.allInstances().isEmpty());
+    }
+
+
+
+    private class PMListener implements ProductManager.Listener {
+
+        @Override
+        public void productAdded(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        @Override
+        public void productRemoved(ProductManager.Event event) {
+            updateEnableState();
+        }
+
+        private void updateEnableState() {
+            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
+        }
+
     }
 
 
