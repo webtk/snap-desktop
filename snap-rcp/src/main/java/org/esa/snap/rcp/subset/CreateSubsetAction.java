@@ -64,7 +64,7 @@ import java.awt.event.ActionEvent;
 
 
 
-public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
+public class CreateSubsetAction extends AbstractAction implements Presenter.Menu, Presenter.Toolbar{
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Subset24.png";
@@ -73,8 +73,6 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
     static int subsetNumber;
 
     private final ProductNode sourceNode;
-
-    private final Lookup.Result<ProductSceneView> viewResult;
 
     public CreateSubsetAction() {
         this(null);
@@ -89,15 +87,9 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
 
-        Lookup lookup = Utilities.actionsGlobalContext();
-        this.viewResult = lookup.lookupResult(ProductSceneView.class);
-        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
-
         final ProductManager productManager = SnapApp.getDefault().getProductManager();
         setEnabled(productManager.getProductCount() > 0);
         productManager.addListener(new PMListener());
-
-       // updateEnabledState();
     }
 
 
@@ -185,13 +177,6 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
         return button;
     }
 
-    public void resultChanged(LookupEvent ignored) {
-        updateEnabledState();
-    }
-
-    protected void updateEnabledState() {
-        super.setEnabled(!viewResult.allInstances().isEmpty());
-    }
 
 
 
