@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 
 /**
  * This action opens an RGB image view on the currently selected Product.
+ * Enablement: when a product is selected which contains at least 1 band
  *
  * @author Marco Peters
  * @author Daniel Knowles
@@ -58,9 +59,7 @@ import java.util.stream.Collectors;
 
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
-        displayName = "#CTL_OpenRGBImageViewAction_MenuText",
-        popupText = "#CTL_OpenRGBImageViewAction_MenuText",
-//        iconBase = "org/esa/snap/rcp/icons/ImageView.gif",
+        displayName = "#CTL_OpenRGBImageViewAction_Name",
         lazy = false
 )
 @ActionReferences({
@@ -69,34 +68,37 @@ import java.util.stream.Collectors;
         @ActionReference(path = "Context/Product/Product", position = 40, separatorBefore = 35),
 })
 @NbBundle.Messages({
-        "CTL_OpenRGBImageViewAction_MenuText=RGB Image",
+        "CTL_OpenRGBImageViewAction_Name=RGB Image",
         "CTL_OpenRGBImageViewAction_ShortDescription=RGB Image: opens an RGB image view for the selected product"
 })
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "rgbImageProfile";
 
+    private Lookup lookup;
     private final Lookup.Result<ProductNode> viewResult;
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
-    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
+
+    // Governs enablement of the RGB GUI access
+    private final int MINUMUM_NUM_BANDS = 1;
 
 
     public OpenRGBImageViewAction() {this(null);}
 
     public OpenRGBImageViewAction(Product product) {
-        super(Bundle.CTL_OpenRGBImageViewAction_MenuText());
-
+        super(Bundle.CTL_OpenRGBImageViewAction_Name());
         putValue(ACTION_COMMAND_KEY, getClass().getName());
-        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_MenuText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
 
         Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
         this.viewResult = lookup.lookupResult(ProductNode.class);
         this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
     @Override
@@ -360,6 +362,14 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     }
 
     protected void updateEnabledState() {
-        super.setEnabled(!viewResult.allInstances().isEmpty());
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null && productNode.getProduct().getNumBands() > MINUMUM_NUM_BANDS);
+
+//
+//        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+//        super.setEnabled(product != null && product.getNumBands() >= MINUMUM_NUM_BANDS);
+//
+//        super.setEnabled(!viewResult.allInstances().isEmpty());
     }
+
 }

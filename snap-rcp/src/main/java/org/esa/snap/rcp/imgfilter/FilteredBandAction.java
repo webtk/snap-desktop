@@ -43,7 +43,8 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 
 
 /**
- * This action applies a filter to creates a filtered band
+ * This action applies a filter to creates a filtered band.
+ * Enablement: when a band is selected
  *
  * @author Brockmann Consult
  * @author Daniel Knowles
@@ -52,13 +53,13 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 //Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 
+
 @ActionID(
         category = "Tools",
         id = "FilteredBandAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_FilteredBandAction_MenuText",
-        popupText = "#CTL_FilteredBandAction_MenuText",
+        displayName = "#CTL_FilteredBandAction_Name",
         lazy = false
 )
 @ActionReferences({
@@ -67,7 +68,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         @ActionReference(path = "Context/Product/RasterDataNode", position = 40,separatorAfter = 45)
 })
 @NbBundle.Messages({
-        "CTL_FilteredBandAction_MenuText=Filter Band",
+        "CTL_FilteredBandAction_Name=Filter Band",
         "CTL_FilteredBandAction_ShortDescription=Filter Band: applies a filter to the currently selected band and adds it as a new band."
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
@@ -75,18 +76,18 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     private Lookup lookup;
     private Lookup.Result<RasterDataNode> result;
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/FilterBand16.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/FilterBand24.png";
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "FilterBand24.png";
 
     public FilteredBandAction() {
         this(Utilities.actionsGlobalContext());
     }
 
     public FilteredBandAction(Lookup lookup){
-        super(Bundle.CTL_FilteredBandAction_MenuText());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
+        super(Bundle.CTL_FilteredBandAction_Name());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_FilteredBandAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
@@ -210,9 +211,10 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
+
 
 }
 

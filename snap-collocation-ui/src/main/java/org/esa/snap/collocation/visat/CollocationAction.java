@@ -16,9 +16,6 @@
 
 package org.esa.snap.collocation.visat;
 
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.AbstractSnapAction;
 import org.esa.snap.ui.ModelessDialog;
 import org.openide.awt.ActionID;
@@ -34,6 +31,7 @@ import java.awt.event.ActionEvent;
 
 /**
  * Geographic collocation action.
+ * Enablement: always enabled
  *
  * @author Ralf Quast
  * @author Marco Peters
@@ -41,6 +39,7 @@ import java.awt.event.ActionEvent;
  * @author Bing Yang
  */
 //Apr2019 - Knowles / Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+
 
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
 @ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
@@ -50,20 +49,20 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CollocationAction_Text=Collocate",
-        "CTL_CollocationAction_Description=Collocate: creates a files which is a geographic collocation of two files."
+        "CTL_CollocationAction_ShortDescription=Collocate: creates a file which is a geographic collocation of two files."
 })
 public final class CollocationAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
-    private static final String SMALLICON = "org/esa/snap/collocation/docs/icons/Collocate16.png";
-    private static final String LARGEICON = "org/esa/snap/collocation/docs/icons/Collocate24.png";
+
+    private static final String ICONS_DIRECTORY = "org/esa/snap/collocation/docs/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Collocate24.png";
 
 
     public CollocationAction() {
         putValue(NAME, Bundle.CTL_CollocationAction_Text());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_CollocationAction_Description());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CollocationAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
         setHelpId(CollocationDialog.HELP_ID);
     }
 
@@ -85,7 +84,7 @@ public final class CollocationAction extends AbstractSnapAction implements Prese
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 

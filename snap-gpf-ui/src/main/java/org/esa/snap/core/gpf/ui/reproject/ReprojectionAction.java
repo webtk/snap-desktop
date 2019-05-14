@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 
 /**
  * Geographic collocation action.
+ * Enablement: always enabled
  *
  * @author Norman Fomferra
  * @author Daniel Knowles
@@ -48,20 +49,19 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_ReprojectionAction_Name=Reproject",
-        "CTL_ReprojectionAction_Description=Reproject: apply a map projection to create a new file."
+        "CTL_ReprojectionAction_ShortDescription=Reproject: apply a map projection to create a new file."
 })
 public final class ReprojectionAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
 
-    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Reproject16.png";
-    private static final String LARGEICON = "org/esa/snap/core/gpf/docs/gpf/icons/Reproject24.png";
+    private static final String ICONS_DIRECTORY = "org/esa/snap/core/gpf/docs/gpf/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Reproject24.png";
 
     public ReprojectionAction() {
         putValue(NAME, Bundle.CTL_ReprojectionAction_Name());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_ReprojectionAction_Description());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_ReprojectionAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
     }
 
 
@@ -84,7 +84,7 @@ public final class ReprojectionAction extends AbstractSnapAction implements Pres
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 

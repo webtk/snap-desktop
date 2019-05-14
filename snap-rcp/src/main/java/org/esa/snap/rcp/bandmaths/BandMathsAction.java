@@ -17,7 +17,6 @@
 package org.esa.snap.rcp.bandmaths;
 
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.ProductNodeList;
 import org.esa.snap.core.datamodel.RasterDataNode;
@@ -40,6 +39,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 
 /**
  * This action creates a band using a mathematical expression
+ * Enablement: when a product is selected
  *
  * @author Brockmann Consult
  * @author Daniel Knowles
@@ -52,9 +52,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
         id = "BandMathsAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_BandMathsAction_MenuText",
-        popupText = "#CTL_BandMathsAction_MenuText",
-//        iconBase = "org/esa/snap/rcp/icons/BandMaths.gif", // icon is not nice
+        displayName = "#CTL_BandMathsAction_Name",
         lazy = false
 )
 @ActionReferences({
@@ -64,24 +62,29 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
         @ActionReference(path = "Context/Product/RasterDataNode", position = 20)
 })
 @Messages({
-        "CTL_BandMathsAction_MenuText=Math Band",
+        "CTL_BandMathsAction_Name=Math Band",
         "CTL_BandMathsAction_ShortDescription=Math Band: create a new band using an arbitrary mathematical expression"
 })
-public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, Presenter.Menu, Presenter.Toolbar {
+public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
     private static final String HELP_ID = "bandArithmetic";
 
-    private static final String SMALLICON = "org/esa/snap/rcp/icons/MathBand16.png";
-    private static final String LARGEICON = "org/esa/snap/rcp/icons/MathBand24.png";
+    private Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
+
+    private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "MathBand24.png";
 
     public BandMathsAction() {
-        super(Bundle.CTL_BandMathsAction_MenuText());
-        putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        final ProductManager productManager = SnapApp.getDefault().getProductManager();
-        setEnabled(productManager.getProductCount() > 0);
-        productManager.addListener(new PMListener());
+        super(Bundle.CTL_BandMathsAction_Name());
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
+        this.viewResult = lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
     @Override
@@ -108,23 +111,6 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
         bandMathsDialog.show();
     }
 
-    private class PMListener implements ProductManager.Listener {
-
-        @Override
-        public void productAdded(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        @Override
-        public void productRemoved(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        private void updateEnableState() {
-            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
-        }
-
-    }
 
     @Override
     public JMenuItem getMenuPresenter() {
@@ -137,7 +123,17 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
+
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
+
+    protected void updateEnabledState() {
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null );
+    }
+
 }

@@ -28,11 +28,14 @@ import org.openide.util.NbBundle;
 import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
+import javax.swing.plaf.IconUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * Mosaicing action.
+ * Enablement: always enabled
  *
  * @author Norman Fomferra
  * @author Daniel Knowles
@@ -49,21 +52,20 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_MosaicAction_Name=Mosaic",
-        "CTL_MosaicAction_Description=Mosaic: creates a file which is an aggregate of multiple files."
+        "CTL_MosaicAction_ShortDescription=Mosaic: creates a file which is an aggregate of multiple files"
 })
 public final class MosaicAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
     private ModelessDialog dialog;
 
-    private static final String SMALLICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic16.png";
-    private static final String LARGEICON = "org/esa/snap/core/gpf/docs/gpf/icons/Mosaic24.png";
+    private static final String ICONS_DIRECTORY = "org/esa/snap/core/gpf/docs/gpf/icons/";
+    private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Mosaic24.png";
 
 
     public MosaicAction() {
         putValue(NAME, Bundle.CTL_MosaicAction_Name());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(SMALLICON, false));
-        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(LARGEICON, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_MosaicAction_Description());
+        putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_MosaicAction_ShortDescription());
     }
 
     @Override
@@ -90,7 +92,7 @@ public final class MosaicAction extends AbstractSnapAction implements Presenter.
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(LARGEICON,false));
+        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 }

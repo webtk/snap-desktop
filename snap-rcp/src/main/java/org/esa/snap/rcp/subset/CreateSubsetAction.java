@@ -18,7 +18,6 @@ package org.esa.snap.rcp.subset;
 
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.common.SubsetOp;
@@ -39,13 +38,14 @@ import java.awt.event.ActionEvent;
 
 
 /**
-        * This action opens a product subset dialog with the initial spatial bounds
-        * taken from the currently visible image area, if any.
-        *
-        * @author Norman Fomferra
-        * @author Daniel Knowles
-        * @author Bing Yang
-        */
+ * This action opens a product subset dialog with the initial spatial bounds
+ * taken from the currently visible image area, if any.
+ * Enablement: when a product is selected
+ *
+ * @author Norman Fomferra
+ * @author Daniel Knowles
+ * @author Bing Yang
+ */
 //Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 
@@ -57,38 +57,41 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset",
-        "CTL_CreateSubsetAction_Title=<html>Subset: crop a file (spatial, subsample, raster) to create a new file<br>" +
+        "CTL_CreateSubsetAction_ShortDescription=<html>Subset: crop a file (spatial, subsample, raster) to create a new file<br>" +
         "( default boundaries are the current view)</html>"
 })
 
 
 
 
-public class CreateSubsetAction extends AbstractAction implements Presenter.Menu, Presenter.Toolbar{
+public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Subset24.png";
-    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Subset16.png";
 
     static int subsetNumber;
+
+    private Lookup lookup;
+    private final Lookup.Result<ProductNode> viewResult;
 
 
     public CreateSubsetAction() {
         putValue(ACTION_COMMAND_KEY, getClass().getName());
         putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
+        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
-        putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_Title());
 
-        final ProductManager productManager = SnapApp.getDefault().getProductManager();
-        setEnabled(productManager.getProductCount() > 0);
-        productManager.addListener(new PMListener());
+        Lookup lookup = Utilities.actionsGlobalContext();
+        this.lookup = lookup;
+        this.viewResult = lookup.lookupResult(ProductNode.class);
+        this.viewResult.addLookupListener(WeakListeners.create(LookupListener.class, this, viewResult));
+        updateEnabledState();
     }
 
 
     @Override
     public void actionPerformed(ActionEvent ignored) {
-        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
+        Product product = this.lookup.lookup(ProductNode.class).getProduct();
 
         RasterDataNode rasterDataNode = null;
         ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
@@ -153,6 +156,11 @@ public class CreateSubsetAction extends AbstractAction implements Presenter.Menu
         return bounds;
     }
 
+
+
+
+
+
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
@@ -169,24 +177,13 @@ public class CreateSubsetAction extends AbstractAction implements Presenter.Menu
     }
 
 
+    public void resultChanged(LookupEvent ignored) {
+        updateEnabledState();
+    }
 
-
-    private class PMListener implements ProductManager.Listener {
-
-        @Override
-        public void productAdded(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        @Override
-        public void productRemoved(ProductManager.Event event) {
-            updateEnableState();
-        }
-
-        private void updateEnableState() {
-            setEnabled(SnapApp.getDefault().getProductManager().getProductCount() > 0);
-        }
-
+    protected void updateEnabledState() {
+        ProductNode productNode = this.lookup.lookup(ProductNode.class);
+        setEnabled(productNode != null );
     }
 
 
