@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  * @author Daniel Knowles
  * @author Bing Yang
  */
-//Apr2019 - Knowles/Yang - Added access to this tool in the "Image" toolbar including tooltips and related icon.
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Image" toolbar including enablement, tooltips and related icon.
 
 @ActionID(category = "View", id = "OpenRGBImageViewAction")
 @ActionRegistration(
@@ -90,7 +90,7 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     public OpenRGBImageViewAction() {this(null);}
 
-    public OpenRGBImageViewAction(Product product) {
+    public OpenRGBImageViewAction(ProductNode node) {
         super(Bundle.CTL_OpenRGBImageViewAction_Name());
         putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());

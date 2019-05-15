@@ -45,7 +45,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
  * @author Daniel Knowles
  * @author Bing Yang
  */
-//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
+//Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including enablement, tooltips and related icon.
 
 @ActionID(
         category = "Tools",
