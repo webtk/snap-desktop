@@ -49,7 +49,7 @@ import java.awt.event.ActionEvent;
 //Apr2019 - Knowles/Yang - Added access to this tool in the "Raster" toolbar including tooltips and related icon.
 
 
-@ActionID(category = "Tools", id = "CreateSubsetAction")
+@ActionID(category = "Raster", id = "CreateSubsetAction")
 @ActionRegistration(displayName = "#CTL_CreateSubsetAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster", position = 50),
@@ -57,8 +57,7 @@ import java.awt.event.ActionEvent;
 })
 @NbBundle.Messages({
         "CTL_CreateSubsetAction_Name=Subset",
-        "CTL_CreateSubsetAction_ShortDescription=<html>Subset: crop a file (spatial, subsample, raster) to create a new file<br>" +
-        "( default boundaries are the current view)</html>"
+        "CTL_CreateSubsetAction_ShortDescription=Creates a subset (spatial, subsample, raster) of the current file"
 })
 
 
@@ -66,19 +65,21 @@ import java.awt.event.ActionEvent;
 
 public class CreateSubsetAction extends AbstractAction implements LookupListener, Presenter.Menu, Presenter.Toolbar{
 
+    static int subsetNumber;
+
+
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Subset24.png";
-
-    static int subsetNumber;
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Subset16.png";
 
     private Lookup lookup;
     private final Lookup.Result<ProductNode> viewResult;
 
 
     public CreateSubsetAction() {
-        putValue(ACTION_COMMAND_KEY, getClass().getName());
-        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name());
+        putValue(NAME, Bundle.CTL_CreateSubsetAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_CreateSubsetAction_ShortDescription());
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
 
         Lookup lookup = Utilities.actionsGlobalContext();
@@ -158,13 +159,9 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
 
 
 
-
-
-
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
 
@@ -172,7 +169,6 @@ public class CreateSubsetAction extends AbstractAction implements LookupListener
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
         return button;
     }
 

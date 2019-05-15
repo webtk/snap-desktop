@@ -63,7 +63,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.EXPLORER;
 })
 @Messages({
         "CTL_BandMathsAction_Name=Math Band",
-        "CTL_BandMathsAction_ShortDescription=Math Band: create a new band using an arbitrary mathematical expression"
+        "CTL_BandMathsAction_ShortDescription=Creates a new band using an arbitrary mathematical expression"
 })
 public class BandMathsAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
@@ -74,11 +74,14 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "MathBand24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "MathBand16.png";
 
     public BandMathsAction() {
         super(Bundle.CTL_BandMathsAction_Name());
+        putValue(NAME, Bundle.CTL_BandMathsAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_BandMathsAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
 
         Lookup lookup = Utilities.actionsGlobalContext();
         this.lookup = lookup;
@@ -115,7 +118,6 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
 
@@ -123,7 +125,6 @@ public class BandMathsAction extends AbstractAction implements HelpCtx.Provider,
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 

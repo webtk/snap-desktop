@@ -42,14 +42,14 @@ import java.awt.event.ActionEvent;
 
 
 @ActionID(category = "Processors", id = "org.esa.snap.collocation.visat.CollocationAction")
-@ActionRegistration(displayName = "#CTL_CollocationAction_Text", lazy = false)
+@ActionRegistration(displayName = "#CTL_CollocationAction_Name", lazy = false)
 @ActionReferences({
         @ActionReference(path = "Menu/Raster/Geometric Operations", position = 10000),
         @ActionReference(path = "Toolbars/Raster", position = 30)
 })
 @NbBundle.Messages({
-        "CTL_CollocationAction_Text=Collocate",
-        "CTL_CollocationAction_ShortDescription=Collocate: creates a file which is a geographic collocation of two files."
+        "CTL_CollocationAction_Name=Collocation",
+        "CTL_CollocationAction_ShortDescription=Creates a geographic collocation of two files"
 })
 public final class CollocationAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
@@ -57,12 +57,14 @@ public final class CollocationAction extends AbstractSnapAction implements Prese
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/collocation/docs/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Collocate24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Collocate16.png";
 
 
     public CollocationAction() {
-        putValue(NAME, Bundle.CTL_CollocationAction_Text());
+        putValue(NAME, Bundle.CTL_CollocationAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_CollocationAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
         setHelpId(CollocationDialog.HELP_ID);
     }
 
@@ -77,16 +79,13 @@ public final class CollocationAction extends AbstractSnapAction implements Prese
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
     @Override
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
-
 
 }

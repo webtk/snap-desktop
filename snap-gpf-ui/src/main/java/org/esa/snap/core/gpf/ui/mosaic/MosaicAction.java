@@ -28,10 +28,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.actions.Presenter;
 
 import javax.swing.*;
-import javax.swing.plaf.IconUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 /**
  * Mosaicing action.
@@ -52,7 +50,7 @@ import java.io.File;
 })
 @NbBundle.Messages({
         "CTL_MosaicAction_Name=Mosaic",
-        "CTL_MosaicAction_ShortDescription=Mosaic: creates a file which is an aggregate of multiple files"
+        "CTL_MosaicAction_ShortDescription=Creates a mosaic aggregation of multiple files"
 })
 public final class MosaicAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
@@ -60,11 +58,13 @@ public final class MosaicAction extends AbstractSnapAction implements Presenter.
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/core/gpf/docs/gpf/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Mosaic24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Mosaic16.png";
 
 
     public MosaicAction() {
-        putValue(NAME, Bundle.CTL_MosaicAction_Name());
+        putValue(NAME, Bundle.CTL_MosaicAction_Name()+"...");
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
         putValue(SHORT_DESCRIPTION, Bundle.CTL_MosaicAction_ShortDescription());
     }
 
@@ -85,14 +85,12 @@ public final class MosaicAction extends AbstractSnapAction implements Presenter.
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
     @Override
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 }

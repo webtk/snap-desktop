@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 })
 @NbBundle.Messages({
         "CTL_OpenRGBImageViewAction_Name=RGB Image",
-        "CTL_OpenRGBImageViewAction_ShortDescription=RGB Image: opens an RGB image view for the selected product"
+        "CTL_OpenRGBImageViewAction_ShortDescription=Opens a 3-channel RGB image view for the selected product"
 })
 public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Provider, LookupListener, Presenter.Menu, Presenter.Toolbar {
 
@@ -80,6 +80,9 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "RgbImage24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "RgbImage16.png";
+
+
 
     // Governs enablement of the RGB GUI access
     private final int MINUMUM_NUM_BANDS = 1;
@@ -89,10 +92,10 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
 
     public OpenRGBImageViewAction(Product product) {
         super(Bundle.CTL_OpenRGBImageViewAction_Name());
-        putValue(ACTION_COMMAND_KEY, getClass().getName());
-        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name());
+        putValue(NAME, Bundle.CTL_OpenRGBImageViewAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_OpenRGBImageViewAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
 
         Lookup lookup = Utilities.actionsGlobalContext();
         this.lookup = lookup;
@@ -345,7 +348,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
 
@@ -353,7 +355,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 
@@ -364,12 +365,6 @@ public class OpenRGBImageViewAction extends AbstractAction implements HelpCtx.Pr
     protected void updateEnabledState() {
         ProductNode productNode = this.lookup.lookup(ProductNode.class);
         setEnabled(productNode != null && productNode.getProduct().getNumBands() > MINUMUM_NUM_BANDS);
-
-//
-//        Product product = SnapApp.getDefault().getSelectedProduct(SnapApp.SelectionSourceHint.AUTO);
-//        super.setEnabled(product != null && product.getNumBands() >= MINUMUM_NUM_BANDS);
-//
-//        super.setEnabled(!viewResult.allInstances().isEmpty());
     }
 
 }

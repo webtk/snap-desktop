@@ -48,8 +48,8 @@ import java.awt.event.ActionEvent;
         @ActionReference(path = "Toolbars/Raster", position = 60)
 })
 @NbBundle.Messages({
-        "CTL_ReprojectionAction_Name=Reproject",
-        "CTL_ReprojectionAction_ShortDescription=Reproject: apply a map projection to create a new file."
+        "CTL_ReprojectionAction_Name=Reprojection",
+        "CTL_ReprojectionAction_ShortDescription=Creates a reprojection of the current file"
 })
 public final class ReprojectionAction extends AbstractSnapAction implements Presenter.Menu, Presenter.Toolbar {
 
@@ -57,11 +57,13 @@ public final class ReprojectionAction extends AbstractSnapAction implements Pres
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/core/gpf/docs/gpf/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "Reproject24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "Reproject16.png";
 
     public ReprojectionAction() {
-        putValue(NAME, Bundle.CTL_ReprojectionAction_Name());
+        putValue(NAME, Bundle.CTL_ReprojectionAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_ReprojectionAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
     }
 
 
@@ -77,14 +79,12 @@ public final class ReprojectionAction extends AbstractSnapAction implements Pres
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
     @Override
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 

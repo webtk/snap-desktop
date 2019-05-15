@@ -69,7 +69,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
 })
 @NbBundle.Messages({
         "CTL_FilteredBandAction_Name=Filter Band",
-        "CTL_FilteredBandAction_ShortDescription=Filter Band: applies a filter to the currently selected band and adds it as a new band."
+        "CTL_FilteredBandAction_ShortDescription=Creates a new band by applying a filter to the current band"
 })
 public class FilteredBandAction extends AbstractAction  implements LookupListener, ContextAwareAction, Presenter.Menu, Presenter.Toolbar {
 
@@ -78,6 +78,7 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     private static final String ICONS_DIRECTORY = "org/esa/snap/rcp/icons/";
     private static final String TOOL_ICON_LARGE = ICONS_DIRECTORY + "FilterBand24.png";
+    private static final String TOOL_ICON_SMALL = ICONS_DIRECTORY + "FilterBand16.png";
 
     public FilteredBandAction() {
         this(Utilities.actionsGlobalContext());
@@ -85,8 +86,10 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
 
     public FilteredBandAction(Lookup lookup){
         super(Bundle.CTL_FilteredBandAction_Name());
+        putValue(NAME, Bundle.CTL_FilteredBandAction_Name()+"...");
         putValue(SHORT_DESCRIPTION, Bundle.CTL_FilteredBandAction_ShortDescription());
         putValue(LARGE_ICON_KEY, ImageUtilities.loadImageIcon(TOOL_ICON_LARGE, false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(TOOL_ICON_SMALL, false));
 
         this.lookup = lookup;
         result = lookup.lookupResult(RasterDataNode.class);
@@ -203,7 +206,6 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     @Override
     public JMenuItem getMenuPresenter() {
         JMenuItem menuItem = new JMenuItem(this);
-        menuItem.setIcon(null);
         return menuItem;
     }
 
@@ -211,7 +213,6 @@ public class FilteredBandAction extends AbstractAction  implements LookupListene
     public Component getToolbarPresenter() {
         JButton button = new JButton(this);
         button.setText(null);
-        button.setIcon(ImageUtilities.loadImageIcon(TOOL_ICON_LARGE,false));
         return button;
     }
 
