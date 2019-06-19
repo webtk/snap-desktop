@@ -27,7 +27,8 @@
     <packaging>nbm</packaging>
 
     <name>SNAP Pixel Extraction Tool UI</name>
-    <description>The SNAP Pixel Extraction Tool can be used to generate a CSV file from a given pixel location of specified products. It is
+    <description>The SNAP Pixel Extraction Tool can be used to generate a CSV file from a given pixel location of
+        specified products. It is
         implemented as a GPF operator.
     </description>
 
@@ -118,7 +119,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

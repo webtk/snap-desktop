@@ -17,7 +17,8 @@
 
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
-        <doc-windows.version>1.0</doc-windows.version>
+        <doc-windows.version>1.0.1</doc-windows.version>
+        <tiled-editors.version>1.0.1</tiled-editors.version>
         <user.language>en</user.language>
     </properties>
 
@@ -194,6 +195,11 @@
                 <version>${doc-windows.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.esa.snap.netbeans</groupId>
+                <artifactId>tiled-editors</artifactId>
+                <version>${tiled-editors.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>snap-rcp</artifactId>
                 <version>${snap.version}</version>
@@ -252,7 +258,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
                 <configuration>
                     <aggregate>true</aggregate>
                     <subpackages>
@@ -304,7 +309,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>1.19</version>
             </plugin>
         </plugins>
     </build>

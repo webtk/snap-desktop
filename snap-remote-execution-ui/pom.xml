@@ -16,7 +16,9 @@
     <packaging>nbm</packaging>
 
     <name>SNAP Remote Execution GUI</name>
-    <description>The Remote Execution Processor executes on the remote machines a slave graph and then on the host machine it executes a master graph using the products created by the remote machines.</description>
+    <description>The Remote Execution Processor executes on the remote machines a slave graph and then on the host
+        machine it executes a master graph using the products created by the remote machines.
+    </description>
 
     <dependencies>
         <dependency>
@@ -101,7 +103,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

@@ -13,7 +13,9 @@
     <packaging>nbm</packaging>
 
     <name>SNAP Virtual File System UI</name>
-    <description>This modules provides UI for some Virtual File Systems for use with Remote File Systems, such as HTTP, Amazon S3.</description>
+    <description>This modules provides UI for some Virtual File Systems for use with Remote File Systems, such as HTTP,
+        Amazon S3.
+    </description>
 
     <dependencies>
         <dependency>
@@ -71,7 +73,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
