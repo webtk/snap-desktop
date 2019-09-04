@@ -63,7 +63,7 @@ public class DesktopVersionCheck {
                                 "Please check regularly for new plugin updates (Help -> Check for Updates...) \n" +
                                 "to get the best SNAP experience.\n\n" +
                                 "Press 'Yes', if you want to check for plugin updates now.\n\n";
-                Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, "optional.version.check.onstartup");
+                Dialogs.Answer decision = Dialogs.requestDecision("SNAP Update", message, false, null);
                 if (Dialogs.Answer.YES.equals(decision)) {
                     final CheckForUpdatesProvider checkForUpdatesProvider = Lookup.getDefault().lookup(CheckForUpdatesProvider.class);
                     assert checkForUpdatesProvider != null : "An instance of CheckForUpdatesProvider found in Lookup: " + Lookup.getDefault();
