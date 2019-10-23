@@ -24,11 +24,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.util.math.Range;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -51,7 +47,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
     final Boolean[] listenToLogDisplayButtonEnabled = {true};
 
-    private enum RangeKey {FromPaletteSource, FromData, FromMinMaxFields, FromCurrentPalette, ToggleLog}
+    private enum RangeKey {FromPaletteSource, FromData, FromMinMaxFields, FromCurrentPalette, ToggleLog, InvertPalette, Dummy}
     private boolean shouldFireChooserEvent;
     private boolean hidden = false;
 
@@ -118,33 +114,11 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
         logDisplayButton.addActionListener(e -> {
             if (listenToLogDisplayButtonEnabled[0]) {
                 listenToLogDisplayButtonEnabled[0] = false;
-                boolean selected = logDisplayButton.isSelected();
-                logDisplayButton.setSelected(selected);
+                logDisplayButton.setSelected(!logDisplayButton.isSelected());
 
                 applyChanges(RangeKey.ToggleLog);
                 listenToLogDisplayButtonEnabled[0] = true;
-                selected = logDisplayButton.isSelected();
-                selected = logDisplayButton.isSelected();
-
             }
-//
-//            final boolean shouldLog10Display = logDisplayButton.isSelected();
-//            final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
-//            if (shouldLog10Display) {
-//                final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
-//                if (LogDisplay.checkApplicability(cpd)) {
-//                    colorPaletteChooser.setLog10Display(true);
-//                    imageInfo.setLogScaled(true);
-//                    parentForm.applyChanges();
-//                } else {
-//                    LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
-//                    logDisplayButton.setSelected(false);
-//                }
-//            } else {
-//                colorPaletteChooser.setLog10Display(false);
-//                imageInfo.setLogScaled(false);
-//                parentForm.applyChanges();
-//            }
         });
     }
 
@@ -250,53 +224,51 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
 
             final double min;
             final double max;
-            final ColorPaletteDef cpd;
-            final boolean autoDistribute;
             final boolean isSourceLogScaled;
             final boolean isTargetLogScaled;
+            final ColorPaletteDef cpd;
+            final boolean autoDistribute;
 
             switch (key) {
-                case FromPaletteSource:
+            case FromPaletteSource:
                 final Range rangeFromFile = colorPaletteChooser.getRangeFromFile();
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
+                isSourceLogScaled = currentInfo.isLogScaled();
+                isTargetLogScaled = currentInfo.isLogScaled();
                 min = rangeFromFile.getMin();
                 max = rangeFromFile.getMax();
                 cpd = currentCPD;
-                    autoDistribute = true;
-
-                    break;
-                case FromData:
+                autoDistribute = true;
+                break;
+            case FromData:
                 final Stx stx = parentForm.getStx(parentForm.getFormModel().getRaster());
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
+                isSourceLogScaled = currentInfo.isLogScaled();
+                isTargetLogScaled = currentInfo.isLogScaled();
                 min = stx.getMinimum();
                 max = stx.getMaximum();
                 cpd = currentCPD;
-                    autoDistribute = true;
-
-                    break;
-                case ToggleLog:
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = !currentInfo.isLogScaled();
-
-                    min = currentCPD.getMinDisplaySample();
-                    max = currentCPD.getMaxDisplaySample();
-                    cpd = currentCPD;
-
-                    autoDistribute = true;
-                    break;
-                case FromMinMaxFields:
-                    isSourceLogScaled = currentInfo.isLogScaled();
-                    isTargetLogScaled = currentInfo.isLogScaled();
+                autoDistribute = true;
+                break;
+            case FromMinMaxFields:
+                isSourceLogScaled = currentInfo.isLogScaled();
+                isTargetLogScaled = currentInfo.isLogScaled();
                 min = (double) minField.getValue();
                 max = (double) maxField.getValue();
                 cpd = currentCPD;
-                    autoDistribute = true;
-
-                    break;
-            default:
+                autoDistribute = true;
+                break;
+            case ToggleLog:
                 isSourceLogScaled = currentInfo.isLogScaled();
+                isTargetLogScaled = !currentInfo.isLogScaled();
+//                parentForm.getImageInfo().getColorPaletteSourcesInfo().setAlteredScheme(true);
+
+                min = currentCPD.getMinDisplaySample();
+                max = currentCPD.getMaxDisplaySample();
+                cpd = currentCPD;
+
+                autoDistribute = true;
+                break;
+            default:
+                isSourceLogScaled = selectedCPD.isLogScaled();
                 isTargetLogScaled = currentInfo.isLogScaled();
                 min = currentCPD.getMinDisplaySample();
                 max = currentCPD.getMaxDisplaySample();
@@ -304,7 +276,16 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
                 autoDistribute = true;
 
             }
+
+
+
             currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+
+
+            if (key == RangeKey.ToggleLog) {
+                    currentInfo.setLogScaled(isTargetLogScaled);
+                    colorPaletteChooser.setLog10Display(isTargetLogScaled);
+            }
             parentForm.applyChanges();
         }
     }

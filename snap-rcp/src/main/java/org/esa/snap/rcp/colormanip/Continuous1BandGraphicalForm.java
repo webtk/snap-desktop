@@ -43,6 +43,8 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     private final AbstractButton evenDistButton;
     private final MoreOptionsForm moreOptionsForm;
     private final DiscreteCheckBox discreteCheckBox;
+    final Boolean[] listenToLogDisplayButtonEnabled = {true};
+
 
     Continuous1BandGraphicalForm(final ColorManipulationForm parentForm) {
         this.parentForm = parentForm;
@@ -57,21 +59,15 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         parentForm.getFormModel().modifyMoreOptionsForm(moreOptionsForm);
 
         logDisplayButton = LogDisplay.createButton();
+
+
         logDisplayButton.addActionListener(e -> {
-            final boolean shouldLog10Display = logDisplayButton.isSelected();
-            if (shouldLog10Display) {
-                final ImageInfo imageInfo = parentForm.getFormModel().getModifiedImageInfo();
-                final ColorPaletteDef cpd = imageInfo.getColorPaletteDef();
-                if (LogDisplay.checkApplicability(cpd)) {
-                    setLogarithmicDisplay(parentForm.getFormModel().getRaster(), true);
-                    parentForm.applyChanges();
-                } else {
-                    LogDisplay.showNotApplicableInfo(parentForm.getContentPanel());
-                    logDisplayButton.setSelected(false);
-                }
-            } else {
-                setLogarithmicDisplay(parentForm.getFormModel().getRaster(), false);
-                parentForm.applyChanges();
+
+            if (listenToLogDisplayButtonEnabled[0]) {
+                listenToLogDisplayButtonEnabled[0] = false;
+                logDisplayButton.setSelected(!logDisplayButton.isSelected());
+                applyChangesLogToggle();
+                listenToLogDisplayButtonEnabled[0] = true;
             }
         });
 
@@ -225,4 +221,58 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             return log10Scaling.scale(value);
         }
     }
+
+
+    private void applyChangesLogToggle() {
+
+
+      //  final ImageInfo currentInfo = parentForm.getImageInfo();
+        // todo Bing
+        final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
+
+        final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
+
+        final double min;
+        final double max;
+        final boolean isSourceLogScaled;
+        final boolean isTargetLogScaled;
+        final ColorPaletteDef cpd;
+        final boolean autoDistribute;
+
+        isSourceLogScaled = currentInfo.isLogScaled();
+        isTargetLogScaled = !currentInfo.isLogScaled();
+        min = currentCPD.getMinDisplaySample();
+        max = currentCPD.getMaxDisplaySample();
+        cpd = currentCPD;
+        autoDistribute = true;
+
+        if (testMinMax(min, max, isTargetLogScaled)) {
+            currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
+            currentInfo.setLogScaled(isTargetLogScaled);
+            parentForm.applyChanges();
+        }
+    }
+
+    // todo VisatApp lines commented out, needs to notify user of error condition
+    private boolean testMinMax(double min, double max, boolean isLogScaled) {
+        boolean checksOut = true;
+
+        if (min == max) {
+            checksOut = false;
+//            VisatApp.getApp().setStatusBarMessage("WARNING: Min cannot equal Max");
+//            JOptionPane.showMessageDialog(minField, "Min cannot equal Max");
+        }
+
+        if (isLogScaled && min == 0) {
+            checksOut = false;
+//            VisatApp.getApp().setStatusBarMessage("WARNING: Min cannot be 0 in log scaling mode");
+//            JOptionPane.showMessageDialog(minField, "Min cannot be 0 in log scaling mode");
+        }
+
+        if (checksOut) {
+//            VisatApp.getApp().clearStatusBarMessage();
+        }
+        return checksOut;
+    }
+
 }
