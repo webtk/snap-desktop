@@ -171,8 +171,12 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
                 point.setColor(color == null ? ImageInfo.NO_COLOR : color);
                 fireTableCellUpdated(rowIndex, columnIndex);
             } else if (columnIndex == 1) {
-                point.setSample((Double) aValue);
-                fireTableCellUpdated(rowIndex, columnIndex);
+                if ((Double) aValue != 0) {
+                    point.setSample((Double) aValue);
+                    fireTableCellUpdated(rowIndex, columnIndex);
+                } else {
+                    System.out.print("zero value");
+                }
             }
         }
 

@@ -59,8 +59,6 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         parentForm.getFormModel().modifyMoreOptionsForm(moreOptionsForm);
 
         logDisplayButton = LogDisplay.createButton();
-
-
         logDisplayButton.addActionListener(e -> {
 
             if (listenToLogDisplayButtonEnabled[0]) {
@@ -121,6 +119,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
 
         discreteCheckBox.setDiscreteColorsMode(imageInfo.getColorPaletteDef().isDiscrete());
         logDisplayButton.setSelected(newModel.getImageInfo().isLogScaled());
+        imageInfoEditor.setLogScaled(newModel.getImageInfo().isLogScaled());
         parentForm.revalidateToolViewPaneControl();
     }
 
@@ -221,15 +220,10 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             return log10Scaling.scale(value);
         }
     }
-
-
     private void applyChangesLogToggle() {
 
 
-      //  final ImageInfo currentInfo = parentForm.getImageInfo();
-        // todo Bing
         final ImageInfo currentInfo = parentForm.getFormModel().getModifiedImageInfo();
-
         final ColorPaletteDef currentCPD = currentInfo.getColorPaletteDef();
 
         final double min;
@@ -246,33 +240,13 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
         cpd = currentCPD;
         autoDistribute = true;
 
-        if (testMinMax(min, max, isTargetLogScaled)) {
+        if (ColorUtils.checkRangeCompatibility(min, max, isTargetLogScaled)) {
             currentInfo.setColorPaletteDef(cpd, min, max, autoDistribute, isSourceLogScaled, isTargetLogScaled);
             currentInfo.setLogScaled(isTargetLogScaled);
+            imageInfoEditor.setLogScaled(currentInfo.isLogScaled());
             parentForm.applyChanges();
         }
     }
 
-    // todo VisatApp lines commented out, needs to notify user of error condition
-    private boolean testMinMax(double min, double max, boolean isLogScaled) {
-        boolean checksOut = true;
-
-        if (min == max) {
-            checksOut = false;
-//            VisatApp.getApp().setStatusBarMessage("WARNING: Min cannot equal Max");
-//            JOptionPane.showMessageDialog(minField, "Min cannot equal Max");
-        }
-
-        if (isLogScaled && min == 0) {
-            checksOut = false;
-//            VisatApp.getApp().setStatusBarMessage("WARNING: Min cannot be 0 in log scaling mode");
-//            JOptionPane.showMessageDialog(minField, "Min cannot be 0 in log scaling mode");
-        }
-
-        if (checksOut) {
-//            VisatApp.getApp().clearStatusBarMessage();
-        }
-        return checksOut;
-    }
 
 }
