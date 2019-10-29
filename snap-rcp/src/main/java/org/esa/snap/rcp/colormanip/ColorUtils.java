@@ -3,8 +3,7 @@ package org.esa.snap.rcp.colormanip;
 import org.esa.snap.rcp.SnapApp;
 
 /**
- * Utility class containing methods for the Color Manipulation Tool.
- *
+ * Utility class containing methods to the Color Manipulation Tool.
  *
  * @author Jean Coravu
  * @author Daniel Knowles
@@ -73,12 +72,6 @@ public class ColorUtils {
         return color & 0x0FF;
     }
 
-
-
-
-
-
-
     public static boolean isNumber(String string) {
         try {
             double d = Double.parseDouble(string);
@@ -89,16 +82,27 @@ public class ColorUtils {
         return true;
     }
 
-
-    public static boolean checkRangeCompatibility(String minStr, String maxStr) {
-
-        if (!isNumber(minStr)) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Min Textfield is not a number");
+    public static boolean isNumber(String string, String componentName, boolean showMessage) {
+        try {
+            double d = Double.parseDouble(string);
+        } catch (NumberFormatException nfe) {
+            if (showMessage) {
+                SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: " + componentName + "=" + string + " is not a number");
+            }
             return false;
         }
 
-        if (!isNumber(maxStr)) {
-            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Max Textfield is not a number");
+        return true;
+    }
+
+
+    public static boolean checkRangeCompatibility(String minStr, String maxStr) {
+
+        if (!isNumber(minStr, "Min Textfield", true)) {
+            return false;
+        }
+
+        if (!isNumber(maxStr, "Min Textfield", true)) {
             return false;
         }
 
@@ -164,8 +168,11 @@ public class ColorUtils {
         return true;
     }
 
-
-
-
-
+    public static boolean checkTableRangeCompatibility(double value, double min, double max) {
+        if (value <= min || value >= max) {
+            SnapApp.getDefault().setStatusBarMessage("INPUT ERROR!!: Value outside range of adjacent Table Values");
+            return false;
+        }
+        return true;
+    }
 }

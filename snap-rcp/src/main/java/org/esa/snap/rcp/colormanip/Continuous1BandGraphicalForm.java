@@ -44,6 +44,7 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
     private final MoreOptionsForm moreOptionsForm;
     private final DiscreteCheckBox discreteCheckBox;
     final Boolean[] listenToLogDisplayButtonEnabled = {true};
+    private boolean zoomToHistLimitsDefault = true; // this parameter could be used in future if desired in a preferences setting
 
 
     Continuous1BandGraphicalForm(final ColorManipulationForm parentForm) {
@@ -112,7 +113,9 @@ public class Continuous1BandGraphicalForm implements ColorManipulationChildForm 
             newModel.setMinHistogramViewSample(oldModel.getMinHistogramViewSample());
             newModel.setMaxHistogramViewSample(oldModel.getMaxHistogramViewSample());
         }
-        if (newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
+
+        if (zoomToHistLimitsDefault ||
+                newModel.getSliderSample(0) < newModel.getMinHistogramViewSample() ||
             newModel.getSliderSample(newModel.getSliderCount() - 1) > newModel.getMaxHistogramViewSample()) {
             imageInfoEditor.computeZoomInToSliderLimits();
         }
