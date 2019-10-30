@@ -187,7 +187,7 @@ public class Continuous1BandTabularForm implements ColorManipulationChildForm {
                     double aValueDouble = Double.parseDouble((String) aValue);
                     if (ColorUtils.checkTableRangeCompatibility(aValueDouble, valueRange.getMin(), valueRange.getMax()) && ColorUtils.checkLogCompatibility(aValueDouble, "Value",
                             parentForm.getFormModel().getModifiedImageInfo().isLogScaled())) {
-                        point.setSample((Double) aValue);
+                        point.setSample(aValueDouble);
                         fireTableCellUpdated(rowIndex, columnIndex);
                     }
                 }
